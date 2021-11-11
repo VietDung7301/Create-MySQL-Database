@@ -11,7 +11,7 @@ public class initDB {
         Connection conn = null;
         String url = "jdbc:mysql://localhost:3306/DatabaseLab";
         String user = "root";
-        String password = "#nothingspecial";
+        String password = "password";
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(url, user, password);
@@ -32,6 +32,6 @@ public class initDB {
             System.out.println("**** Created table KHACH_HANG ****");
         } catch (SQLException e) {
             e.printStackTrace();
-         } 
+        }
     }
 }
