@@ -705,10 +705,10 @@ public class initDB {
         try {
             Statement st = conn.createStatement();
             String sql = "CREATE TABLE CHI_TIET_HOA_DON_XUAT(" +
-                        "ID_HDN CHAR(10)," +
+                        "ID_HDX CHAR(10)," +
                         "ID_MAY CHAR(10)," +
-                        "GIA_NHAP INT," +
-                        "PRIMARY KEY (ID_HDN,ID_MAY)," +
+                        "GIA_XUAT INT," +
+                        "PRIMARY KEY (ID_HDX,ID_MAY)," +
                         "FOREIGN KEY (ID_MAY) REFERENCES CHI_TIET_LAPTOP (ID_MAY)" +
                             "ON DELETE CASCADE ON UPDATE CASCADE);";
             st.executeUpdate(sql);
