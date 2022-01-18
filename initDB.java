@@ -38,10 +38,9 @@ public class initDB {
     static final int NUMBER_OF_CUSTOMERS = 1100302;
     static final int NUMBER_OF_STORES = 503;
     static final int NUMBER_OF_LAPTOPS_DETAIL = NUMBER_OF_CUSTOMERS * 3/2;
-    static final int NUMBER_OF_IMPORT_BILLS = NUMBER_OF_LAPTOPS_DETAIL/100;
+    static final int NUMBER_OF_IMPORT_BILLS = NUMBER_OF_LAPTOPS_DETAIL/400;
     static final int NUMBER_OF_IMPORT_BILLS_DETAIL = NUMBER_OF_LAPTOPS_DETAIL;
-    static final int NUMBER_OF_EXPORT_BILLS = NUMBER_OF_LAPTOPS_DETAIL / 4;
-    static final int NUMBER_OF_EXPORT_BILLS_DETAIL = NUMBER_OF_LAPTOPS_DETAIL / 2;
+    static final int NUMBER_OF_EXPORT_BILLS = NUMBER_OF_CUSTOMERS * 2/3;
     static final int NUMBER_OF_EMPLOYEES = NUMBER_OF_STORES * 4;
     static final int NUMBER_OF_SUPPLIER = 20;
     static final int NUMBER_OF_CARTS = NUMBER_OF_CUSTOMERS / 100;
@@ -54,8 +53,11 @@ public class initDB {
     static String[] laptopColor = {"Bac", "Den", "Vang", "Xanh"};
     static int[] laptopStorage = {256, 512, 1024, 2048};
     static int[] laptopPrice = new int[NUMBER_OF_LAPTOPS_DETAIL + 10];
-    static int[] price = new int[NUMBER_OF_LAPTOPS_DETAIL];
+    static int[] price = new int[NUMBER_OF_LAPTOPS_DETAIL + 10];
+    static int[] laptopStatus = new int[NUMBER_OF_LAPTOPS_DETAIL + 10];
 
+    static String[] importDate = new String[NUMBER_OF_IMPORT_BILLS + 10];
+    static String[] exportDate = new String[NUMBER_OF_EXPORT_BILLS + 10];
 
     static String[] diaChi = new String[11000];
     static String[] tinh = new String[11000];
@@ -207,7 +209,7 @@ public class initDB {
         sql = "INSERT INTO KHACH_HANG VALUES";
         for (int i=0; i<NUMBER_OF_CUSTOMERS; i++) {
             sql+= "('" + IdKhachHang[i] + "','"+ name[i] + "','" + diaChiKH[i] + "','" + email[i] + "','" + phone[i] + "')";
-            if (i % 1000 == 999 || i == NUMBER_OF_CUSTOMERS-1) 
+            if (i % 10000 == 9999 || i == NUMBER_OF_CUSTOMERS-1) 
             {
                 sql+= ';';
                 try {
@@ -351,7 +353,7 @@ public class initDB {
         for (int i=0; i<NUMBER_OF_STORES; i++) {
             int t = rand(cntDiaChi);
             sql+= String.format("(\'CH%06d\', \'%s\', \'%s\', \'%s\')", i, tinh[t], huyen[t], xa[t] + ", " + huyen[t] + ", " + tinh[t]);
-            if (i % 1000 == 999 || i == NUMBER_OF_STORES - 1) 
+            if (i % 10000 == 9999 || i == NUMBER_OF_STORES - 1) 
             {
                 sql+= ';';
                 try {
@@ -436,7 +438,7 @@ public class initDB {
                             "ID_NCC CHAR(10)," +
                             "ID_LOAI CHAR(10)," +
                             "ID_CH CHAR(10)," +
-                            "Type int," +
+                            "STATUS int," +
                             "PRIMARY KEY (ID_MAY)," +
                             "FOREIGN KEY (ID_NCC) REFERENCES NHA_CUNG_CAP (ID_NCC) ON DELETE CASCADE ON UPDATE CASCADE," +
                             "FOREIGN KEY (ID_LOAI) REFERENCES LAPTOP (ID_LOAI) ON DELETE CASCADE ON UPDATE CASCADE," +
@@ -450,12 +452,12 @@ public class initDB {
             Statement st = conn.createStatement();
             String sql = "INSERT INTO CHI_TIET_LAPTOP VALUES";
             for (int i=0; i<NUMBER_OF_LAPTOPS_DETAIL; i++) {
-                int type = rand(10);
-                type = type < 2 ? type : 2;
+                int type = rand(11) < 10 ? 1 : 2;
                 laptopPrice[i] = price[i % NUMBER_OF_LAPTOPS];
+                laptopStatus[i] = type;
                 sql+= String.format("(\'LP%07d\', \'NCC%02d\', \'LOAI%04d\', \'CH%06d\', %d)%s", 
-                                    i, i % NUMBER_OF_IMPORT_BILLS % NUMBER_OF_SUPPLIER, rand(NUMBER_OF_LAPTOPS), rand(NUMBER_OF_STORES), type, (i < NUMBER_OF_LAPTOPS_DETAIL-1 && i % 1000 != 999) ? "," : ";");
-                if (i % 1000 == 999 || i == NUMBER_OF_LAPTOPS_DETAIL-1) {
+                                    i, i % NUMBER_OF_IMPORT_BILLS % NUMBER_OF_SUPPLIER, rand(NUMBER_OF_LAPTOPS), rand(NUMBER_OF_STORES), type, (i < NUMBER_OF_LAPTOPS_DETAIL-1 && i % 10000 != 9999) ? "," : ";");
+                if (i % 10000 == 9999 || i == NUMBER_OF_LAPTOPS_DETAIL-1) {
                     st.executeUpdate(sql);
                     System.out.printf("___________________%.2f %%\r", (double) (i + 1)/NUMBER_OF_LAPTOPS_DETAIL * 100, 2);
                     sql = "INSERT INTO CHI_TIET_LAPTOP VALUES";
@@ -533,7 +535,7 @@ public class initDB {
         sql = "INSERT INTO NHAN_VIEN VALUES";
         for (int i=0; i<NUMBER_OF_EMPLOYEES; i++) {
             sql+= "('" + IdNhanVien[i] + "','"+ name[i] + "','" + CH[i] + "','" + phone[i] + "')";
-            if (i % 1000 == 999 || i == NUMBER_OF_EMPLOYEES-1) 
+            if (i % 10000 == 9999 || i == NUMBER_OF_EMPLOYEES-1) 
             {
                 sql+= ';';
                 try {
@@ -579,9 +581,10 @@ public class initDB {
 
         String sql = "INSERT INTO HOA_DON_NHAP VALUES";
         for (int i=0; i<NUMBER_OF_IMPORT_BILLS; i++) {
+            importDate[i] = randomDate(2017, 2021);
             sql+= String.format("(\'HDN%06d\', \'%s\', \'NCC%02d\', \'NV%05d\')", 
-                                i, randomDate(2016, 2021), i % NUMBER_OF_SUPPLIER, i % NUMBER_OF_EMPLOYEES);
-            if (i % 1000 == 999 || i == NUMBER_OF_IMPORT_BILLS - 1) {
+                                i, importDate[i], i % NUMBER_OF_SUPPLIER, i % NUMBER_OF_EMPLOYEES);
+            if (i % 10000 == 9999 || i == NUMBER_OF_IMPORT_BILLS - 1) {
                 sql+= ';';
                 try {
                     Statement st = conn.createStatement();
@@ -626,7 +629,7 @@ public class initDB {
         String sql = "INSERT INTO CHI_TIET_HOA_DON_NHAP VALUES";
         for (int i=0; i<NUMBER_OF_IMPORT_BILLS_DETAIL; i++) {
             sql+= String.format("(\'HDN%06d\', \'LP%07d\', %d)", i % NUMBER_OF_IMPORT_BILLS, i, laptopPrice[i] - randBetween(500, 3000) * 1000);
-            if (i % 1000 == 999 || i == NUMBER_OF_IMPORT_BILLS_DETAIL - 1) {
+            if (i % 10000 == 9999 || i == NUMBER_OF_IMPORT_BILLS_DETAIL - 1) {
                 sql+= ';';
                 try {
                     Statement st = conn.createStatement();
@@ -670,9 +673,10 @@ public class initDB {
 
         String sql = "INSERT INTO HOA_DON_XUAT VALUES";
         for (int i=0; i<NUMBER_OF_EXPORT_BILLS; i++) {
+            exportDate[i] = randomDate(2017, 2021);
             sql+= String.format("(\'HDX%06d\', \'%s\', \'KH%07d\', \'NV%05d\')", 
-                                i, randomDate(2016, 2021), rand(NUMBER_OF_CUSTOMERS), rand(NUMBER_OF_EMPLOYEES) );
-            if (i % 1000 == 999 || i == NUMBER_OF_EXPORT_BILLS - 1) {
+                                i, exportDate[i], rand(NUMBER_OF_CUSTOMERS), rand(NUMBER_OF_EMPLOYEES) );
+            if (i % 10000 == 9999 || i == NUMBER_OF_EXPORT_BILLS - 1) {
                 sql+= ';';
                 try {
                     Statement st = conn.createStatement();
@@ -718,9 +722,13 @@ public class initDB {
 
         String sql = "INSERT INTO CHI_TIET_HOA_DON_XUAT VALUES";
         for (int i=0; i<NUMBER_OF_LAPTOPS_DETAIL; i++) {
-            if (i != NUMBER_OF_LAPTOPS_DETAIL-1 &&  rand(4) == 0 ) continue;
-            sql+= String.format("(\'HDX%06d\', \'LP%07d\', %d)", rand(NUMBER_OF_EXPORT_BILLS), i, laptopPrice[i] + randBetween(-700, 3000) * 1000);
-            if (i % 1000 == 999 || i == NUMBER_OF_LAPTOPS_DETAIL - 1) {
+            if (laptopStatus[i] == 2) continue;
+            int ex, im = i % NUMBER_OF_IMPORT_BILLS;
+            do {
+                ex = rand(NUMBER_OF_EXPORT_BILLS);
+            } while (exportDate[ex].compareTo(importDate[im]) < 0);
+            sql+= String.format("(\'HDX%06d\', \'LP%07d\', %d)", ex, i, laptopPrice[i] + randBetween(-700, 3000) * 1000);
+            if (i % 10000 == 9999 || i == NUMBER_OF_LAPTOPS_DETAIL - 1) {
                 sql+= ';';
                 try {
                     Statement st = conn.createStatement();
@@ -766,9 +774,9 @@ public class initDB {
         String sql = "INSERT INTO GIO_HANG VALUES";
         for (int i=0; i< NUMBER_OF_CARTS; i++) {
             sql+= String.format("(\'GH%04d\', \'KH%07d\', \'%s\')%s", 
-                                i, rand(NUMBER_OF_CUSTOMERS), randomDate(2020, 2021), i == NUMBER_OF_CARTS-1 || i % 1000 == 999 ? ";": ",");
+                                i, rand(NUMBER_OF_CUSTOMERS), randomDate(2020, 2021), i == NUMBER_OF_CARTS-1 || i % 10000 == 9999 ? ";": ",");
             
-            if (i % 1000 == 999 || i == NUMBER_OF_CARTS - 1) {
+            if (i % 10000 == 9999 || i == NUMBER_OF_CARTS - 1) {
                 try {
                     Statement st = conn.createStatement();
                     st.executeUpdate(sql);
@@ -810,7 +818,7 @@ public class initDB {
         for (int i=0; i<NUMBER_OF_CARTS_DETAIL; i++) {
             sql+= String.format("(\'GH%04d\', \'LOAI%04d\', %d)%s", rand(NUMBER_OF_CARTS), rand(NUMBER_OF_LAPTOPS), randBetween(1, 3), 
                                 i == NUMBER_OF_CARTS_DETAIL - 1 || i % 1000 == 999 ? ";" : ",");
-            if (i % 1000 == 999 || i == NUMBER_OF_CARTS_DETAIL - 1) {
+            if (i % 10000 == 9999 || i == NUMBER_OF_CARTS_DETAIL - 1) {
                 try {
                     Statement st = conn.createStatement();
                     st.executeUpdate(sql);
