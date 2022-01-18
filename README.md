@@ -31,7 +31,10 @@ git clone https://github.com/VietDung7301/Create-MySQL-Database.git
 
 
 ## Bắt đầu quá trình tạo Database
-- Di chuyển tới thư mục Create-MySQL-Database vừa tạo ở trên, kiểm tra xem trong folder này đã có 2 file `initDB.java` và `mysql-connector-java-8.0.27.jar` chưa
+- Di chuyển tới thư mục Create-MySQL-Database vừa tạo ở trên
+```shell
+cd Create-MySQL-Database
+```
 - Khởi động mysql và tạo 1 database mới:
 ```shell
 service mysql start
